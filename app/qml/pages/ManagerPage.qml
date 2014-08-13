@@ -41,6 +41,7 @@ Page {
         id: settings
         path: "/org/pebbled/settings"
         property bool silentWhenConnected: false
+        property bool transliterateMessage: false
         property bool incomingCallNotification: true
         property bool notificationsCommhistoryd: true
         property bool notificationsMissedCall: true
@@ -54,8 +55,11 @@ Page {
     }
 
     SilicaFlickable {
+        id: flickable
         anchors.fill: parent
         contentHeight: column.height
+
+        VerticalScrollDecorator { flickable: flickable }
 
         PullDownMenu {
             MenuItem {
@@ -86,16 +90,13 @@ Page {
                 }
 
             }
-            ListItem {
+            Button {
                 visible: pebbled.connected
-                Label {
-                    text: pebbled.name
-                    truncationMode: TruncationMode.Fade
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        margins: Theme.paddingLarge
-                    }
+                text: pebbled.name
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    margins: Theme.paddingLarge
                 }
                 onClicked: pageStack.push(Qt.resolvedUrl("WatchPage.qml"))
             }
@@ -152,10 +153,20 @@ Page {
             }
             TextSwitch {
                 text: qsTr("Silent when connected")
+                description: qsTr("Sets phone profile to \"silent\" when Pebble is connected")
                 checked: settings.silentWhenConnected
                 automaticCheck: false
                 onClicked: {
                     settings.silentWhenConnected = !settings.silentWhenConnected;
+                }
+            }
+            TextSwitch {
+                text: qsTr("Transliterate messages")
+                description: qsTr("Messages are transliterated to ASCII before sending to Pebble")
+                checked: settings.transliterateMessage
+                automaticCheck: false
+                onClicked: {
+                    settings.transliterateMessage = !settings.transliterateMessage;
                 }
             }
 
@@ -168,7 +179,8 @@ Page {
             }
 
             TextSwitch {
-                text: qsTr("Messaging (SMS and IM)")
+                text: qsTr("Messaging")
+                description: qsTr("SMS and IM")
                 checked: settings.notificationsCommhistoryd
                 automaticCheck: false
                 onClicked: {
@@ -232,7 +244,7 @@ Page {
             }
 
             TextSwitch {
-                text: qsTr("Other phone notification")
+                text: qsTr("Other notifications")
                 checked: settings.notificationsOther
                 automaticCheck: false
                 onClicked: {
@@ -241,7 +253,7 @@ Page {
             }
 
             TextSwitch {
-                text: qsTr("All phone notifications")
+                text: qsTr("All notifications")
                 checked: settings.notificationsAll
                 automaticCheck: false
                 enabled: settings.notificationsOther
